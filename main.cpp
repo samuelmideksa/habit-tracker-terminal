@@ -6,6 +6,7 @@
 #include <limits>
 #include <iomanip>
 #include <regex>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -27,6 +28,7 @@ void displayHabits(const vector<Habit> &habits);
 void addHabit(vector<Habit> &habits);
 void saveHabits(const vector<Habit> &habits);
 void loadHabits(vector<Habit> &habits);
+bool createDirectory(const string &directory);
 void trackPerformance(const vector<Habit> &habits);
 void displayPerformance(const vector<Habit> &habits);
 void updatePerformance(const vector<Habit> &habits, const string &date, const string &habitName, const string &unit);
@@ -42,8 +44,13 @@ int main()
     do
     {
         displayMenu();
-        cin >> choice;
-        cin.ignore(); // Clear newline from input buffer
+        displayMenu();
+        while (!(cin >> choice) || (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5))
+        {
+            cout << "Invalid input, please enter appropriate input: ";
+            cin.clear();
+            cin.ignore();
+        }
 
         switch (choice)
         {
@@ -176,6 +183,16 @@ void addHabit(vector<Habit> &habits)
     newHabit.position = habits.size() + 1;
     habits.push_back(newHabit);
     cout << "Habit added successfully." << endl;
+    if (!createDirectory("./records"))
+    {
+        cout << "Error: Failed to create directory. Habits won't be saved." << endl;
+        return;
+    }
+    if (!createDirectory("./records/habits"))
+    {
+        cout << "Error: Failed to create directory. Habit trackings cannot be added." << endl;
+        return;
+    }
 }
 
 void saveHabits(const vector<Habit> &habits)
@@ -220,6 +237,23 @@ void loadHabits(vector<Habit> &habits)
         habits.push_back(habit);
     }
     file.close();
+}
+
+// Function to create directory if it doesn't exist
+bool createDirectory(const string &directory)
+{
+    // Check if the directory exists
+    struct stat info;
+    if (stat(directory.c_str(), &info) != 0)
+    {
+        // Directory doesn't exist, create it
+        if (mkdir(directory.c_str()) != 0)
+        {
+            cerr << "Error: Failed to create directory: " << directory << endl;
+            return false; // Failed to create directory
+        }
+    }
+    return true; // Directory exists or created successfully
 }
 
 void trackPerformance(const vector<Habit> &habits)
