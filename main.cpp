@@ -37,19 +37,16 @@ int main()
 {
     vector<Habit> habits;
     loadHabits(habits);
-    // Print the size of the habits vector
-    cout << "Number of habits loaded: " << habits.size() << endl;
+
 
     int choice;
     do
     {
         displayMenu();
-        displayMenu();
         while (!(cin >> choice) || (choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5))
         {
             cout << "Invalid input, please enter appropriate input: ";
             cin.clear();
-            cin.ignore();
         }
 
         switch (choice)
@@ -109,7 +106,12 @@ void addHabit(vector<Habit> &habits)
 {
     Habit newHabit;
     cout << "Enter habit name: ";
-    getline(cin, newHabit.name);
+    while (!(cin >> newHabit.name))
+    {
+        cout << "Habit name can't be empty, please enter appropriate input: ";
+        cin.clear();
+        cin.ignore();
+    }
 
     // Ask user to choose between measurable or yes/no habit
     cout << "Choose habit type:" << endl;
@@ -128,7 +130,7 @@ void addHabit(vector<Habit> &habits)
     {
         newHabit.unit = "-";
         newHabit.targetType = "-";
-        newHabit.target = -1;
+        newHabit.target = 1;
     }
     else if (habitTypeChoice == 2)
     {
@@ -260,7 +262,6 @@ void trackPerformance(const vector<Habit> &habits)
 {
     displayHabits(habits);
 
-    cout << "Enter date (YYYY-MM-DD): ";
     string date;
     cout << "Enter date (YYYY-MM-DD): ";
 
@@ -292,7 +293,12 @@ void displayPerformance(const vector<Habit> &habits)
     displayHabits(habits);
     cout << "Enter habit name to display performance for: ";
     string habitName;
-    getline(cin, habitName);
+    while (!(cin >> habitName))
+    {
+        cout << "Invalid input, please enter appropriate habit name: ";
+        cin.clear();
+        cin.ignore();
+    }
 
     // Check if the entered habit name exists in the list of habits
     bool habitExists = false;
@@ -332,6 +338,7 @@ void displayPerformance(const vector<Habit> &habits)
         if (getline(ss, date, ',') && ss >> amount)
         {
             cout << left << setw(12) << date << setw(10) << amount << endl;
+            cout << endl << "for yes/no habits 1 means yes, 0 means no.\n\n";
         }
         else
         {
@@ -385,9 +392,9 @@ void updatePerformance(const vector<Habit> &habits, const string &date, const st
                 cout << "1. Yes" << endl;
                 cout << "0. No" << endl;
                 int completed;
-                while (!(cin >> completed) || (completed != 1 && completed != 2))
+                while (!(cin >> completed) || (completed != 1 && completed != 0))
                 {
-                    cout << "Invalid input, please enter either 1 or 2: ";
+                    cout << "Invalid input, please enter either 1 or 0: ";
                     cin.clear();
                     cin.ignore();
                 }
